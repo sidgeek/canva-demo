@@ -1,9 +1,8 @@
-import CursorType from '../../event/CursorType'
 import { IBoundingBox } from '../../event/IBoundingBox'
-import { HoverZone } from '../../event/mouse/HoverZone'
+import { Shape } from './Shape'
 import { Draw } from '../Draw'
 
-export class Rect extends HoverZone {
+export class Rect extends Shape {
   constructor(draw: Draw, size: IBoundingBox) {
     const {left, top, width, height } = size
     super(left, top, width, height, draw)
@@ -11,10 +10,6 @@ export class Rect extends HoverZone {
 
   public render() {
     super.render()
-
-    if (this.isMouseHovering) {
-      this.draw.mouse.topLayerCursorType = CursorType.move
-    }
 
     const {left, top, width, height} = this
     const ctx = this.draw.ctx

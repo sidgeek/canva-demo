@@ -1,14 +1,12 @@
-import { IBoundingBox } from '../IBoundingBox'
-import IRenderable from '../IRenderable'
-import { Draw } from '../../draw/Draw'
+import { IBoundingBox } from '../../event/IBoundingBox'
+import IRenderable from '../../event/IRenderable'
+import { Draw } from '../Draw'
 import { IPosition } from '../../../interface/Draw'
 
-export interface IHoverZoneOptions {
-  zIndex?: number;
+export interface IShapeOptions {
 }
 
-export class HoverZone implements IBoundingBox, IRenderable {
-  public zIndex = 0;
+export class Shape implements IBoundingBox, IRenderable {
   public isMouseHovering = false;
 
   constructor(
@@ -17,7 +15,7 @@ export class HoverZone implements IBoundingBox, IRenderable {
     public width: number,
     public height: number,
     public draw: Draw,
-    options: IHoverZoneOptions = {},
+    options: IShapeOptions = {},
   ) {
     // @ts-ignore
     Object.entries(options).forEach(([key, value]) => this[key] = value)
