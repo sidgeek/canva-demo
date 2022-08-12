@@ -1,4 +1,3 @@
-
 export interface IEditorOption {
   width: number;
   height: number;

@@ -240,8 +240,6 @@ export class Draw {
   }
 
   public render() {
-    console.log('>>> redn')
-
     this.clearCanvas()
 
     this.container.style.cursor = this.mouse.topLayerCursorType

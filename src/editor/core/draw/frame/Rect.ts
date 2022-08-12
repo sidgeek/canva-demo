@@ -6,7 +6,7 @@ import { Draw } from '../Draw'
 export class Rect extends HoverZone {
   constructor(draw: Draw, size: IBoundingBox) {
     const {left, top, width, height } = size
-    super(left, top, width, height, CursorType.move, draw)
+    super(left, top, width, height, draw)
   }
 
   public render() {

@@ -1,7 +1,4 @@
-import { EditorContext } from '../dataset/enum/Editor'
-
 export interface ISearchResultBasic {
-  type: EditorContext;
   index: number;
   groupId: string;
 }
