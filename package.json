@@ -22,6 +22,7 @@
     "vite": "^2.4.2"
   },
   "dependencies": {
+    "canvg": "^4.0.1",
     "prismjs": "^1.27.0"
   }
 }
