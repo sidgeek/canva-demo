@@ -14,8 +14,9 @@ export class Rect extends Shape {
     const ctx = this.ctx
     ctx.save()
     ctx.fillStyle = 'red'
-    ctx.lineWidth = 15
+    ctx.lineWidth = 1
     ctx.fillRect(left, top, width, height)
+    // ctx.strokeRect(left, top, width, height)
     ctx.restore()
   }
 }

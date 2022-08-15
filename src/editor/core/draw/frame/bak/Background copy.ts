@@ -1,4 +1,4 @@
-import { Draw } from '../Draw'
+import { Draw } from '../../Draw'
 // import { Canvg } from 'canvg'
 
 export class Background {

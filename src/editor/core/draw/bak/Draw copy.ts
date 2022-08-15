@@ -1,17 +1,16 @@
 // @ts-ignore
-import CanvasEvent from './canvasEvent'
-import CursorType from '../event/CursorType'
-import { Background } from './frame/Background'
-import { Rect } from './frame/Rect'
-import { Shape } from './frame/Shape'
-import { Polygon } from './frame/Polygon'
+import CanvasEvent from '../canvasEvent'
+import CursorType from '../../event/CursorType'
+import { Background } from '../frame/Background'
+import { Rect } from '../frame/Rect'
+// import { CanvasEvent } from '../event/CanvasEvent'
 // import { GlobalEvent } from '../event/GlobalEvent'
 const scaleFactor = 1.1
 export class Draw {
   private container: HTMLDivElement
   public ctx: CanvasRenderingContext2D
   public mouse: any
-  private nodes: Shape[]
+  private nodes: Rect[]
   private background: Background
   public lastX: number
   public lastY: number
@@ -44,6 +43,7 @@ export class Draw {
     this.trackTransforms(ctx)
     this.canvasEvent = new CanvasEvent(this)
     this.canvasEvent.register()
+    // this.initEvent()
     this.render()
   }
 
@@ -141,19 +141,71 @@ export class Draw {
   }
 
   public initData () {
-    const res : Shape[] = []
+    const res : Rect[] = []
     res.push(new Rect(this.ctx, {left: 30, top: 30, width: 100, height: 100} ))
-    res.push(new Rect(this.ctx, {left: 200, top: 30, width: 100, height: 100} ))
-    const points = [
-      {x: 100, y: 50},
-      {x: 0, y: 50},
-    ]
-    res.push(new Polygon(this.ctx, {left: 300, top: 300, width: 100, height: 100}, points ))
     return res
   }
 
   public getTransFormedScreenPoint(point: {x: number, y: number}) {
     return (this.ctx as any).transformedPoint(point.x, point.y)
+  }
+
+  public initEvent () {
+    const canvas = this.getCanvas()
+    canvas.addEventListener('mousedown', (evt) => {
+      console.log('>>> mousedown', evt.button)
+      switch (evt.button) {
+        case 0: // 判断是鼠标左键点击
+          evt.preventDefault()
+          evt.stopPropagation()
+          this.lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft)
+          this.lastY = evt.offsetY || (evt.pageY - canvas.offsetTop)
+          this.dragStart = this.getTransFormedScreenPoint({x: this.lastX, y: this.lastY})
+          this.dragged = false
+          break
+
+        case 1: // 右击
+          break
+        case 2: // 右击
+          break
+      }
+		},false)
+
+    canvas.addEventListener('mousemove', (evt) => {
+			this.lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft)
+			this.lastY = evt.offsetY || (evt.pageY - canvas.offsetTop)
+			this.dragged = true
+			if (this.dragStart){
+        const pt =this.getTransFormedScreenPoint({x: this.lastX, y: this.lastY})
+				this.ctx.translate(pt.x-this.dragStart.x, pt.y - this.dragStart.y)
+				this.render()
+			}
+		},false)
+
+    canvas.addEventListener('mouseup', (evt) => {
+			this.dragStart = null
+			if (!this.dragged) this.zoom(evt.shiftKey ? -1 : 1 )
+		},false)
+
+    const handleScroll = (evt: any) => {
+      const isCtrlKey = evt.ctrlKey
+      const isShiftKey = evt.shiftKey
+
+			const delta = evt.wheelDelta ? evt.wheelDelta/40 : evt.detail ? -evt.detail : 0
+      if (delta) {
+        if (isCtrlKey)  {
+          this.zoom(delta)
+        } else {
+          this.move(delta, isShiftKey)
+        }
+      }
+
+			return evt.preventDefault() && false
+		}
+		canvas.addEventListener('DOMMouseScroll',handleScroll,false)
+		canvas.addEventListener('mousewheel',handleScroll,false)
+
+    document.addEventListener('contextmenu', event => event.preventDefault())
   }
 
   public getOptions () {
@@ -191,11 +243,6 @@ export class Draw {
     const p2 = this.getTransFormedScreenPoint({x: width, y: height})
     ctx.clearRect(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y)
   }
-
-  public getNodes() {
-    return this.nodes
-  }
-
 
   public render() {
     this.clearCanvas()
