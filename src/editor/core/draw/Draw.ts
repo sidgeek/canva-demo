@@ -36,8 +36,8 @@ export class Draw {
 
     this.dragged = false
 
-    this.nodes = this.initCanvasAndData()
-    this.background = new Background(this)
+    this.nodes = this.initData()
+    this.background = this.initCanvasAndBackground()
     this.trackTransforms(ctx)
     this.initEvent()
     this.render()
@@ -123,11 +123,20 @@ export class Draw {
     this.render()
   }
 
-  public initCanvasAndData () {
-    const { clientHeight, clientWidth } = this.container
-    this.ctx.canvas.width = clientWidth
-    this.ctx.canvas.height = clientHeight
+  public initCanvasAndBackground() {
+    const { clientHeight: height, clientWidth: width } = this.container
 
+    // 画布初始化
+    this.ctx.canvas.width = width
+    this.ctx.canvas.height = height
+
+    const left = 0
+    const top = 0
+
+    return new Background(this.ctx, {left, top, width, height})
+  }
+
+  public initData () {
     // const res : Rect[] = []
     // const xN = 50
     // const yN = 50
@@ -139,7 +148,7 @@ export class Draw {
     //   }
     // }
     const res : Rect[] = []
-    res.push(new Rect(this, {left: 30, top: 30, width: 100, height: 100} ))
+    res.push(new Rect(this.ctx, {left: 30, top: 30, width: 100, height: 100} ))
     return res
   }
 

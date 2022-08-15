@@ -1,18 +1,17 @@
 import { IBoundingBox } from '../../event/IBoundingBox'
 import { Shape } from './Shape'
-import { Draw } from '../Draw'
 
 export class Rect extends Shape {
-  constructor(draw: Draw, size: IBoundingBox) {
+  constructor(ctx: CanvasRenderingContext2D, size: IBoundingBox) {
     const {left, top, width, height } = size
-    super(left, top, width, height, draw)
+    super(ctx, left, top, width, height)
   }
 
   public render() {
     super.render()
 
     const {left, top, width, height} = this
-    const ctx = this.draw.ctx
+    const ctx = this.ctx
     ctx.save()
     ctx.fillStyle = 'red'
     ctx.lineWidth = 15

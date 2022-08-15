@@ -1,6 +1,5 @@
 import { IBoundingBox } from '../../event/IBoundingBox'
 import IRenderable from '../../event/IRenderable'
-import { Draw } from '../Draw'
 import { IPosition } from '../../../interface/Draw'
 
 export interface IShapeOptions {
@@ -10,11 +9,12 @@ export class Shape implements IBoundingBox, IRenderable {
   public isMouseHovering = false;
 
   constructor(
+    public ctx: CanvasRenderingContext2D,
     public left: number,
     public top: number,
     public width: number,
     public height: number,
-    public draw: Draw,
+
     options: IShapeOptions = {},
   ) {
     // @ts-ignore
