@@ -3,4 +3,5 @@ export interface IBoundingBox {
   top: number;
   width: number;
   height: number;
+  color?: string
 }

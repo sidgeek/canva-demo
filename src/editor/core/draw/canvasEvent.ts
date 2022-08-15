@@ -1,6 +1,7 @@
 import { IPosition } from '../../interface/Draw'
 import { MouseButtonsType } from '../event/mouse/MouseType'
 import { Draw } from './Draw'
+import { Shape } from './frame/Shape'
 
 class CanvasEvent {
   private draw: Draw;
@@ -71,7 +72,7 @@ class CanvasEvent {
         if (this.mouse.hover.target) {
           const t = this.mouse.hover.target
           this.mouse.dragTarget = t
-          this.mouse.dragTargetInitPosition = {x: t.left, y: t.top}
+          this.mouse.dragTargetInitPosition = { x: t.left, y: t.top }
         }
 
         break
@@ -104,7 +105,7 @@ class CanvasEvent {
         if (this.mouse.dragTarget) {
           // 拖动节点
           const t = this.mouse.dragTarget
-          const {x, y} = this.mouse.dragTargetInitPosition
+          const { x, y } = this.mouse.dragTargetInitPosition
           t.updateStart(x + move.x, y + move.y)
           this.draw.render()
         } else {
@@ -123,6 +124,34 @@ class CanvasEvent {
     }
   }
 
+  getHitCanvasCtx() {
+    const hitCanvas = document.createElement('canvas')
+    return hitCanvas.getContext('2d') as CanvasRenderingContext2D
+  }
+
+  hasHitNode(point: IPosition, node: Shape) {
+    const hitCtx = this.getHitCanvasCtx()
+
+    // keep same size
+    const nCanvas = this.draw.getCanvas()
+    hitCtx.canvas.width = nCanvas.width
+    hitCtx.canvas.height = nCanvas.height
+
+    node.render(hitCtx)
+    const w = 10, hw = w / 2
+    const h = 10, hH = h / 2
+    const left = Math.round(point.x - hw)
+    const top = Math.round(point.y - hH)
+    const imgData = hitCtx.getImageData(left, top, w, h)
+
+    for (let i = 0; i < imgData.data.length; i += 4) {
+      const alpha = imgData.data[i+3]
+      if (alpha > 0) return true
+    }
+
+    return false
+  }
+
   mouseMove(evt: MouseEvent) {
     const nodes = this.draw.getNodes()
     const cp = this.getCanvasPoint(evt)
@@ -131,6 +160,12 @@ class CanvasEvent {
       const isIn = n.isPosInShapeInner(cp)
       if (isIn) {
         this.mouse.hover.target = n
+      }
+
+      const hasHit = this.hasHitNode(cp, n)
+      if (hasHit) {
+        // @ts-ignore
+        console.log('>> hit', n.id)
       }
     })
   }

@@ -1,12 +1,12 @@
 import { IPosition } from '../../../interface/Draw'
 import { IBoundingBox } from '../../event/IBoundingBox'
-import { Shape } from './Shape'
+import { IShapeOptions, Shape } from './Shape'
 
 export class Polygon extends Shape {
   private points: IPosition[]
-  constructor(ctx: CanvasRenderingContext2D, size: IBoundingBox, points: IPosition[]) {
+  constructor(ctx: CanvasRenderingContext2D, size: IBoundingBox, options: IShapeOptions, points: IPosition[]) {
     const {left, top, width, height } = size
-    super(ctx, left, top, width, height)
+    super(ctx, left, top, width, height, options)
     this.points = points
   }
 
@@ -17,10 +17,11 @@ export class Polygon extends Shape {
     }))
   }
 
-  public render() {
+  public render(eCtx?: CanvasRenderingContext2D) {
+    const ctx = eCtx || this.ctx
+
     super.render()
     // const {left, top, width, height} = this
-    const ctx = this.ctx
     ctx.save()
     ctx.beginPath()
     ctx.fillStyle = 'red'

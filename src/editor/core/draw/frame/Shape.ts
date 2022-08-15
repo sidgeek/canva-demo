@@ -3,6 +3,9 @@ import IRenderable from '../../event/IRenderable'
 import { IPosition } from '../../../interface/Draw'
 
 export interface IShapeOptions {
+  strokeColor?: string
+  fillColor?: string
+  id?: number
 }
 
 export class Shape implements IBoundingBox, IRenderable {
@@ -24,7 +27,7 @@ export class Shape implements IBoundingBox, IRenderable {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   destructor() { }
 
-  render() {
+  render(eCtx?: CanvasRenderingContext2D) {
     // this.store.ctx.strokeStyle = 'red';
     // this.store.ctx.strokeRect(this.left, this.top, this.width, this.height);
     // this.store.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
