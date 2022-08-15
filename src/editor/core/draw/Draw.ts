@@ -5,20 +5,17 @@ import { Background } from './frame/Background'
 import { Rect } from './frame/Rect'
 import { Shape } from './frame/Shape'
 import { Polygon } from './frame/Polygon'
+import { IMouseButtonsType } from '../event/mouse/MouseType'
 // import { GlobalEvent } from '../event/GlobalEvent'
 const scaleFactor = 1.1
 export class Draw {
   private container: HTMLDivElement
   public ctx: CanvasRenderingContext2D
-  public mouse: any
+  public mouse: IMouseButtonsType
   private nodes: Shape[]
   private background: Background
-  public lastX: number
-  public lastY: number
-  public dragStart: any
-  public dragged: boolean
-  private canvasEvent: any
 
+  private canvasEvent: any
 
   constructor(
     container: HTMLDivElement,
@@ -29,15 +26,17 @@ export class Draw {
 
     this.mouse = {
       hover: {
+        target: null,
         topLayerZIndex: -Infinity,
         topLayerCursorType: CursorType.defaultCursor,
-      }
+      },
+      lastX: container.clientWidth / 2,
+      lastY: container.clientHeight / 2,
+      dragStart: null,
+      dragged: false,
+      dragTarget: null,
+      dragTargetInitPosition: {x: 0, y: 0}
     }
-
-    this.lastX = container.clientWidth / 2
-    this.lastY = container.clientHeight / 2
-
-    this.dragged = false
 
     this.nodes = this.initData()
     this.background = this.initCanvasAndBackground()
@@ -109,7 +108,7 @@ export class Draw {
 
   public zoom (value: number){
     const ctx = this.ctx
-    const pt = (ctx as any).transformedPoint(this.lastX, this.lastY)
+    const pt = (ctx as any).transformedPoint(this.mouse.lastX, this.mouse.lastY)
     ctx.translate(pt.x,pt.y)
     const factor = Math.pow(scaleFactor,value)
     ctx.scale(factor,factor)
@@ -200,7 +199,7 @@ export class Draw {
   public render() {
     this.clearCanvas()
 
-    this.container.style.cursor = this.mouse.topLayerCursorType
+    this.container.style.cursor = this.mouse.hover.topLayerCursorType
 
     // this.background.render()
 

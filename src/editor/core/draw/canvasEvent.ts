@@ -1,4 +1,5 @@
-import MouseButtonsType from '../event/mouse/MouseButtonsType'
+import { IPosition } from '../../interface/Draw'
+import { MouseButtonsType } from '../event/mouse/MouseType'
 import { Draw } from './Draw'
 
 class CanvasEvent {
@@ -37,66 +38,86 @@ class CanvasEvent {
     document.addEventListener('contextmenu', (event) => event.preventDefault())
   }
 
-  public getCanvasPoint(evt: MouseEvent) {
+  private getCanvasPointFromMousePoint(mp: IPosition) {
+    return this.draw.getTransFormedScreenPoint(mp)
+  }
+
+  private getCanvasPoint(evt: MouseEvent) {
     const canvas = this.draw.getCanvas()
     const mouseX = evt.offsetX || evt.pageX - canvas.offsetLeft
     const mouseY = evt.offsetY || evt.pageY - canvas.offsetTop
 
-    const canvasP = this.draw.getTransFormedScreenPoint({
+    this.draw.mouse.lastX = mouseX
+    this.draw.mouse.lastY = mouseY
+
+    return this.getCanvasPointFromMousePoint({
       x: mouseX,
       y: mouseY,
     })
-
-    return canvasP
   }
 
   public handleMouseDown(evt: MouseEvent) {
-    const canvas = this.draw.getCanvas()
+    evt.preventDefault()
+    evt.stopPropagation()
 
-    switch (evt.button) {
+    const { lastX, lastY } = this.draw.mouse
+    this.mouse.dragStart = this.getCanvasPointFromMousePoint({
+      x: lastX,
+      y: lastY,
+    })
+
+    switch (evt.buttons) {
       case MouseButtonsType.left: // 判断是鼠标左键点击
-        evt.preventDefault()
-        evt.stopPropagation()
-        this.draw.lastX = evt.offsetX || evt.pageX - canvas.offsetLeft
-        this.draw.lastY = evt.offsetY || evt.pageY - canvas.offsetTop
-        this.draw.dragStart = this.draw.getTransFormedScreenPoint({
-          x: this.draw.lastX,
-          y: this.draw.lastY,
-        })
-        this.draw.dragged = false
+        if (this.mouse.hover.target) {
+          const t = this.mouse.hover.target
+          this.mouse.dragTarget = t
+          this.mouse.dragTargetInitPosition = {x: t.left, y: t.top}
+        }
+
         break
 
-      case MouseButtonsType.right: // 右击
+      case MouseButtonsType.right: {
+        // 右击
+        this.mouse.dragged = false
         break
+      }
     }
   }
 
   public handleMousemove(evt: MouseEvent) {
-    switch (evt.button) {
+    const pt = this.getCanvasPoint(evt) // 必须调用，更新了lastX
+
+    switch (evt.buttons) {
       case MouseButtonsType.none: {
         this.mouseMove(evt)
         break
       }
-      case MouseButtonsType.left:
-        {
-          // 判断是鼠标左键点击
-          const canvas = this.draw.getCanvas()
-          this.draw.lastX = evt.offsetX || evt.pageX - canvas.offsetLeft
-          this.draw.lastY = evt.offsetY || evt.pageY - canvas.offsetTop
-          this.draw.dragged = true
-          if (this.draw.dragStart) {
-            const pt = this.draw.getTransFormedScreenPoint({
-              x: this.draw.lastX,
-              y: this.draw.lastY,
-            })
-            this.draw.ctx.translate(
-              pt.x - this.draw.dragStart.x,
-              pt.y - this.draw.dragStart.y
-            )
+      case MouseButtonsType.left: {
+        this.mouse.dragged = true
+        const { dragStart } = this.mouse
+        if (!dragStart) return
+
+        const move = {
+          x: pt.x - dragStart.x,
+          y: pt.y - dragStart.y,
+        }
+        if (this.mouse.dragTarget) {
+          // 拖动节点
+          const t = this.mouse.dragTarget
+          const {x, y} = this.mouse.dragTargetInitPosition
+          t.updateStart(x + move.x, y + move.y)
+          this.draw.render()
+        } else {
+          // 拖动整个画布
+          if (this.mouse.dragStart) {
+            this.draw.ctx.translate(move.x, move.y)
             this.draw.render()
           }
         }
+
         break
+      }
+
       case MouseButtonsType.right: // 右击
         break
     }
@@ -105,18 +126,19 @@ class CanvasEvent {
   mouseMove(evt: MouseEvent) {
     const nodes = this.draw.getNodes()
     const cp = this.getCanvasPoint(evt)
-    // console.log('>>> n', cp)
-    nodes.forEach(n => {
+    this.mouse.hover.target = null
+    nodes.forEach((n) => {
       const isIn = n.isPosInShapeInner(cp)
       if (isIn) {
-        console.log('>>> n', isIn)
+        this.mouse.hover.target = n
       }
     })
   }
 
   public handleMouseUp(evt: MouseEvent) {
-    this.draw.dragStart = null
-    if (!this.draw.dragged) this.draw.zoom(evt.shiftKey ? -1 : 1)
+    this.mouse.dragStart = null
+    this.mouse.dragTarget = null
+    if (!this.mouse.dragged) this.draw.zoom(evt.shiftKey ? -1 : 1)
   }
 
   public mouseleave(evt: MouseEvent) {
@@ -128,15 +150,8 @@ class CanvasEvent {
     const isShiftKey = evt.shiftKey
 
     // @ts-ignore
-    console.log('>>> ', evt.wheelDelta)
-
-
-    // @ts-ignore
-    const delta = evt.wheelDelta
-      ? evt.wheelDelta / 40
-      : evt.detail
-      ? -evt.detail
-      : 0
+    const eDelta = evt.wheelDelta
+    const delta = eDelta ? eDelta / 40 : evt.detail ? -evt.detail : 0
     if (delta) {
       if (isCtrlKey) {
         this.draw.zoom(delta)
@@ -148,6 +163,10 @@ class CanvasEvent {
     // @ts-ignore
     return evt.preventDefault() && false
   };
+
+  get mouse() {
+    return this.draw.mouse
+  }
 }
 
 export default CanvasEvent

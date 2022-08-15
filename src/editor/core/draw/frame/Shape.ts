@@ -36,6 +36,11 @@ export class Shape implements IBoundingBox, IRenderable {
     this.top += dy
   }
 
+  updateStart(x: number, y: number) {
+    this.left = x
+    this.top = y
+  }
+
   addWidthHeight(dx: number, dy: number) {
     this.width += dx
     this.height += dy

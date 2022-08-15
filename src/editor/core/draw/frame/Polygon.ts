@@ -18,8 +18,7 @@ export class Polygon extends Shape {
   }
 
   public render() {
-    // debugger
-    // super.render()
+    super.render()
     // const {left, top, width, height} = this
     const ctx = this.ctx
     ctx.save()
@@ -27,8 +26,6 @@ export class Polygon extends Shape {
     ctx.fillStyle = 'red'
     ctx.lineWidth = 1
     const patchedPoints = this.getPatchedPoints()
-
-    console.log('>>> pp:', patchedPoints)
 
     ctx.moveTo(this.left, this.top)
     patchedPoints.forEach(p => {

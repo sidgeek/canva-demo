@@ -247,7 +247,7 @@ export class Draw {
   public render() {
     this.clearCanvas()
 
-    this.container.style.cursor = this.mouse.topLayerCursorType
+    this.container.style.cursor = this.mouse.hover.topLayerCursorType
 
     // this.background.render()
 
