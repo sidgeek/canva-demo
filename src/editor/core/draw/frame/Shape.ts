@@ -6,6 +6,7 @@ export interface IShapeOptions extends IBoundingBox {
   strokeColor?: string;
   fillColor?: string;
   id?: number;
+  points?: IPosition[];
 }
 
 export class Shape implements IBoundingBox, IRenderable {

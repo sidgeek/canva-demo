@@ -168,16 +168,18 @@ export class Draw {
         id: 2,
       })
     )
-    const points = [
-      { x: 100, y: 50 },
-      { x: 0, y: 50 },
-    ]
     res.push(
-      new Polygon(
-        this.ctx,
-        { left: 300, top: 300, width: 100, height: 100, id: 3 },
-        points
-      )
+      new Polygon(this.ctx, {
+        left: 300,
+        top: 300,
+        width: 100,
+        height: 100,
+        id: 3,
+        points: [
+          { x: 400, y: 350 },
+          { x: 300, y: 350 },
+        ],
+      })
     )
     return res
   }
