@@ -157,15 +157,14 @@ class CanvasEvent {
     const cp = this.getCanvasPoint(evt)
     this.mouse.hover.target = null
     nodes.forEach((n) => {
-      const isIn = n.isPosInShapeInner(cp)
+      const isIn = n.isPosInShapeInner(cp, 10)
       if (isIn) {
         this.mouse.hover.target = n
-      }
-
-      const hasHit = this.hasHitNode(cp, n)
-      if (hasHit) {
-        // @ts-ignore
-        console.log('>> hit', n.id)
+        const hasHit = this.hasHitNode(cp, n)
+        if (hasHit) {
+          // @ts-ignore
+          console.log('>> hit', n.id)
+        }
       }
     })
   }

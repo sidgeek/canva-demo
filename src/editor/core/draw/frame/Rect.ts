@@ -1,10 +1,8 @@
-import { IBoundingBox } from '../../event/IBoundingBox'
 import { IShapeOptions, Shape } from './Shape'
 
 export class Rect extends Shape {
-  constructor(ctx: CanvasRenderingContext2D, size: IBoundingBox, options?: IShapeOptions) {
-    const {left, top, width, height } = size
-    super(ctx, left, top, width, height, options)
+  constructor(ctx: CanvasRenderingContext2D, options: IShapeOptions) {
+    super(ctx, options)
   }
 
   /**

@@ -2,30 +2,35 @@ import { IBoundingBox } from '../../event/IBoundingBox'
 import IRenderable from '../../event/IRenderable'
 import { IPosition } from '../../../interface/Draw'
 
-export interface IShapeOptions {
-  strokeColor?: string
-  fillColor?: string
-  id?: number
+export interface IShapeOptions extends IBoundingBox {
+  strokeColor?: string;
+  fillColor?: string;
+  id?: number;
 }
 
 export class Shape implements IBoundingBox, IRenderable {
   public isMouseHovering = false;
+  public left: number;
+  public top: number;
+  public width: number;
+  public height: number;
 
-  constructor(
-    public ctx: CanvasRenderingContext2D,
-    public left: number,
-    public top: number,
-    public width: number,
-    public height: number,
+  constructor(public ctx: CanvasRenderingContext2D, options: IShapeOptions) {
+    this.left = options.left
+    this.top = options.top
+    this.width = options.width
+    this.height = options.height
 
-    options: IShapeOptions = {},
-  ) {
-    // @ts-ignore
-    Object.entries(options).forEach(([key, value]) => this[key] = value)
+    Object.entries(options).forEach(([key, value]) => {
+      if (['left', 'top', 'width', 'height'].indexOf(key) == -1) {
+        // @ts-ignore
+        this[key] = value
+      }
+    })
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  destructor() { }
+  destructor() {}
 
   render(eCtx?: CanvasRenderingContext2D) {
     // this.store.ctx.strokeStyle = 'red';
@@ -49,12 +54,13 @@ export class Shape implements IBoundingBox, IRenderable {
     this.height += dy
   }
 
-  isPosInShapeInner(pos: IPosition) {
-    const {x, y} = pos
-    return (x >= this.left) &&
-      (y >= this.top) &&
-      (x <= this.left + this.width) &&
-      (y <= this.top + this.height)
-
+  isPosInShapeInner(pos: IPosition, gap = 0) {
+    const { x, y } = pos
+    return (
+      x >= this.left - gap &&
+      y >= this.top - gap &&
+      x <= this.left + this.width + gap &&
+      y <= this.top + this.height + gap
+    )
   }
 }

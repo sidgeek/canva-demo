@@ -1,10 +1,8 @@
-import { IBoundingBox } from '../../event/IBoundingBox'
-import { Shape } from './Shape'
+import { IShapeOptions, Shape } from './Shape'
 
 export class Background extends Shape {
-  constructor(public ctx: CanvasRenderingContext2D, size: IBoundingBox) {
-    const {left, top, width, height } = size
-    super(ctx, left, top, width, height)
+  constructor(public ctx: CanvasRenderingContext2D, options: IShapeOptions) {
+    super(ctx, options)
   }
 
   public render() {

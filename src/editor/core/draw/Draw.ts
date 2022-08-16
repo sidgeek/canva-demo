@@ -149,20 +149,24 @@ export class Draw {
   public initData() {
     const res: Shape[] = []
     res.push(
-      new Rect(this.ctx, { left: 30, top: 30, width: 100, height: 100 }, {
+      new Rect(this.ctx, {
+        left: 30,
+        top: 30,
+        width: 100,
+        height: 100,
         fillColor: '#333',
-        id: 1
+        id: 1,
       })
     )
     res.push(
-      new Rect(
-        this.ctx,
-        { left: 400, top: 30, width: 100, height: 100 },
-        {
-          strokeColor: 'blue',
-          id: 2
-        }
-      )
+      new Rect(this.ctx, {
+        left: 400,
+        top: 30,
+        width: 100,
+        height: 100,
+        strokeColor: 'blue',
+        id: 2,
+      })
     )
     const points = [
       { x: 100, y: 50 },
@@ -171,9 +175,7 @@ export class Draw {
     res.push(
       new Polygon(
         this.ctx,
-        { left: 300, top: 300, width: 100, height: 100 }, {
-          id: 3
-        },
+        { left: 300, top: 300, width: 100, height: 100, id: 3 },
         points
       )
     )

@@ -1,12 +1,10 @@
 import { IPosition } from '../../../interface/Draw'
-import { IBoundingBox } from '../../event/IBoundingBox'
 import { IShapeOptions, Shape } from './Shape'
 
 export class Polygon extends Shape {
   private points: IPosition[]
-  constructor(ctx: CanvasRenderingContext2D, size: IBoundingBox, options: IShapeOptions, points: IPosition[]) {
-    const {left, top, width, height } = size
-    super(ctx, left, top, width, height, options)
+  constructor(ctx: CanvasRenderingContext2D, options: IShapeOptions, points: IPosition[]) {
+    super(ctx, options)
     this.points = points
   }
 
