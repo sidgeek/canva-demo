@@ -7,7 +7,7 @@ export const FakeNodeConfigs: IShapeOptions[] = [
     top: 30,
     width: 100,
     height: 100,
-    fillColor: '#333',
+    // fillColor: '#333',
     id: 1,
   },
   {
@@ -18,15 +18,6 @@ export const FakeNodeConfigs: IShapeOptions[] = [
     height: 100,
     strokeColor: 'blue',
     id: 2,
-  },
-  {
-    type: 'rect',
-    left: 30,
-    top: 30,
-    width: 100,
-    height: 100,
-    fillColor: '#333',
-    id: 1,
   },
   {
     type: 'polygon',

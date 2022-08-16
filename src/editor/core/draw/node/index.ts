@@ -61,7 +61,6 @@ class VNode {
 
   render() {
     if (this.isHover) {
-      debugger
       this.background.render()
     }
     this.shape.render()

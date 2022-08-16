@@ -12,13 +12,15 @@ export class Draw {
   public ctx: CanvasRenderingContext2D;
   public mouse: IMouseButtonsType;
   private nodes: VNode[];
-  private background: Background;
+  // private background: Background;
 
   private canvasEvent: any;
+  private dpr: number;
 
   constructor(container: HTMLDivElement, ctx: CanvasRenderingContext2D) {
     this.container = container
     this.ctx = ctx
+    this.dpr = this.getPixRatio()
 
     this.mouse = {
       hover: {
@@ -35,8 +37,7 @@ export class Draw {
     }
 
     this.nodes = this.initNodes()
-    this.background = this.initCanvasAndBackground()
-    this.trackTransforms(ctx)
+    this.initCanvas()
     this.canvasEvent = new CanvasEvent(this)
     this.canvasEvent.register()
     this.render()
@@ -109,6 +110,10 @@ export class Draw {
     }
   }
 
+  getPixRatio () {
+    return window.devicePixelRatio || 1
+  }
+
   public zoom(value: number) {
     const ctx = this.ctx
     const pt = (ctx as any).transformedPoint(
@@ -132,21 +137,32 @@ export class Draw {
     this.render()
   };
 
-  public initCanvasAndBackground() {
+  private canvasResize(width: number, height: number) {
+    width = window.innerWidth
+    height = window.innerHeight
+
+    const canvas = this.ctx.canvas
+    const dpr = this.dpr
+
+    canvas.width = width * dpr
+    canvas.height = height * dpr
+
+    this.ctx.scale(dpr, dpr)
+
+    canvas.style.width = width + 'px'
+    canvas.style.height = height + 'px'
+  }
+
+  public initCanvas() {
     const { clientHeight: height, clientWidth: width } = this.container
 
     // 画布初始化
-    this.ctx.canvas.width = width
-    this.ctx.canvas.height = height
-
-    const left = 0
-    const top = 0
-
-    return new Background(this.ctx, { type: 'rect', left, top, width, height })
+    this.canvasResize(width, height)
+    this.trackTransforms(this.ctx)
   }
 
   public initNodes() {
-    return FakeNodeConfigs.map(config => VNode.createNode(this, config))
+    return FakeNodeConfigs.map((config) => VNode.createNode(this, config))
   }
 
   public getTransFormedScreenPoint(point: { x: number; y: number }) {
@@ -185,7 +201,7 @@ export class Draw {
     const ctx = this.ctx as any
     const p1 = this.getTransFormedScreenPoint({ x: 0, y: 0 })
     const { width, height } = this.getOptions()
-    const p2 = this.getTransFormedScreenPoint({ x: width, y: height })
+    const p2 = this.getTransFormedScreenPoint({ x: width / this.dpr, y: height / this.dpr })
     ctx.clearRect(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y)
   }
 
