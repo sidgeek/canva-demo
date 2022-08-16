@@ -1,7 +1,7 @@
 import { IPosition } from '../../interface/Draw'
 import { MouseButtonsType } from '../event/mouse/MouseType'
 import { Draw } from './Draw'
-import { Shape } from './frame/Shape'
+import VNode from './node'
 
 class CanvasEvent {
   private draw: Draw;
@@ -72,7 +72,7 @@ class CanvasEvent {
         if (this.mouse.hover.target) {
           const t = this.mouse.hover.target
           this.mouse.dragTarget = t
-          this.mouse.dragTargetInitPosition = { x: t.left, y: t.top }
+          this.mouse.dragTargetInitPosition = t.getLeftTopPos()
         }
 
         break
@@ -129,7 +129,7 @@ class CanvasEvent {
     return hitCanvas.getContext('2d') as CanvasRenderingContext2D
   }
 
-  hasHitNode(point: IPosition, node: Shape) {
+  hasHitNode(point: IPosition, node: VNode) {
     const hitCtx = this.getHitCanvasCtx()
 
     // keep same size
@@ -137,7 +137,7 @@ class CanvasEvent {
     hitCtx.canvas.width = nCanvas.width
     hitCtx.canvas.height = nCanvas.height
 
-    node.render(hitCtx)
+    node.renderShape(hitCtx)
     const w = 10, hw = w / 2
     const h = 10, hH = h / 2
     const left = Math.round(point.x - hw)
@@ -156,17 +156,28 @@ class CanvasEvent {
     const nodes = this.draw.getNodes()
     const cp = this.getCanvasPoint(evt)
     this.mouse.hover.target = null
+    let isChanged = false
     nodes.forEach((n) => {
-      const isIn = n.isPosInShapeInner(cp, 10)
+      let isNodeChange = false
+      const isIn = n.isInNodeInner(cp)
       if (isIn) {
         this.mouse.hover.target = n
         const hasHit = this.hasHitNode(cp, n)
         if (hasHit) {
-          // @ts-ignore
-          console.log('>> hit', n.id)
+          isNodeChange = n.updateHoverStatus(true)
         }
+      } else {
+        isNodeChange = n.updateHoverStatus(false)
+      }
+
+      if (isNodeChange && !isChanged) {
+        isChanged = true
       }
     })
+
+    if (isChanged) {
+      this.draw.render()
+    }
   }
 
   public handleMouseUp(evt: MouseEvent) {

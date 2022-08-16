@@ -1,5 +1,5 @@
 import { IPosition } from '../../../interface/Draw'
-import { Shape } from '../../draw/frame/Shape'
+import VNode from '../../draw/node'
 import CursorType from '../CursorType'
 
 export const MouseButtonsType =  {
@@ -11,7 +11,7 @@ export const MouseButtonsType =  {
 
 export interface IMouseButtonsType {
   hover: {
-    target: Shape | null,
+    target: VNode | null,
     topLayerZIndex: number,
     topLayerCursorType: CursorType,
   },
@@ -19,7 +19,7 @@ export interface IMouseButtonsType {
   lastY: number,
   dragStart: IPosition | null
   dragged: boolean,
-  dragTarget: Shape | null
+  dragTarget: VNode | null
   dragTargetInitPosition: IPosition
 }
 

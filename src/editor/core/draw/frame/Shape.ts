@@ -3,8 +3,10 @@ import IRenderable from '../../event/IRenderable'
 import { IPosition } from '../../../interface/Draw'
 
 export interface IShapeOptions extends IBoundingBox {
+  type: string;
   strokeColor?: string;
   fillColor?: string;
+  backgroundFillColor?: string;
   id?: number;
   points?: IPosition[];
 }
@@ -23,11 +25,15 @@ export class Shape implements IBoundingBox, IRenderable {
     this.height = options.height
 
     Object.entries(options).forEach(([key, value]) => {
-      if (['left', 'top', 'width', 'height'].indexOf(key) == -1) {
+      if (['left', 'top', 'width', 'height', 'id'].indexOf(key) == -1) {
         // @ts-ignore
         this[key] = value
       }
     })
+  }
+
+  static createShape(options: IShapeOptions) {
+    return
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function

@@ -2,17 +2,16 @@
 import CanvasEvent from './canvasEvent'
 import CursorType from '../event/CursorType'
 import { Background } from './frame/Background'
-import { Rect } from './frame/Rect'
-import { Shape } from './frame/Shape'
-import { Polygon } from './frame/Polygon'
+import { FakeNodeConfigs } from './initData'
 import { IMouseButtonsType } from '../event/mouse/MouseType'
+import VNode from './node'
 // import { GlobalEvent } from '../event/GlobalEvent'
 const scaleFactor = 1.1
 export class Draw {
   private container: HTMLDivElement;
   public ctx: CanvasRenderingContext2D;
   public mouse: IMouseButtonsType;
-  private nodes: Shape[];
+  private nodes: VNode[];
   private background: Background;
 
   private canvasEvent: any;
@@ -35,7 +34,7 @@ export class Draw {
       dragTargetInitPosition: { x: 0, y: 0 },
     }
 
-    this.nodes = this.initData()
+    this.nodes = this.initNodes()
     this.background = this.initCanvasAndBackground()
     this.trackTransforms(ctx)
     this.canvasEvent = new CanvasEvent(this)
@@ -143,45 +142,11 @@ export class Draw {
     const left = 0
     const top = 0
 
-    return new Background(this.ctx, { left, top, width, height })
+    return new Background(this.ctx, { type: 'rect', left, top, width, height })
   }
 
-  public initData() {
-    const res: Shape[] = []
-    res.push(
-      new Rect(this.ctx, {
-        left: 30,
-        top: 30,
-        width: 100,
-        height: 100,
-        fillColor: '#333',
-        id: 1,
-      })
-    )
-    res.push(
-      new Rect(this.ctx, {
-        left: 400,
-        top: 30,
-        width: 100,
-        height: 100,
-        strokeColor: 'blue',
-        id: 2,
-      })
-    )
-    res.push(
-      new Polygon(this.ctx, {
-        left: 300,
-        top: 300,
-        width: 100,
-        height: 100,
-        id: 3,
-        points: [
-          { x: 400, y: 350 },
-          { x: 300, y: 350 },
-        ],
-      })
-    )
-    return res
+  public initNodes() {
+    return FakeNodeConfigs.map(config => VNode.createNode(this, config))
   }
 
   public getTransFormedScreenPoint(point: { x: number; y: number }) {
