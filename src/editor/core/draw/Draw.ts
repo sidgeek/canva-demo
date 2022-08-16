@@ -1,7 +1,7 @@
 // @ts-ignore
 import CanvasEvent from './canvasEvent'
 import CursorType from '../event/CursorType'
-import { Background } from './frame/Background'
+// import { Background } from './frame/Background'
 import { FakeNodeConfigs } from './initData'
 import { IMouseButtonsType } from '../event/mouse/MouseType'
 import VNode from './node'
@@ -46,6 +46,7 @@ export class Draw {
   trackTransforms(ctx: CanvasRenderingContext2D) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     let xform = svg.createSVGMatrix()
+
     ctx.getTransform = function () {
       return xform
     }
@@ -207,6 +208,10 @@ export class Draw {
 
   public getNodes() {
     return this.nodes
+  }
+
+  public getScale() {
+    return this.ctx.getTransform().a
   }
 
   public render() {

@@ -106,7 +106,7 @@ class CanvasEvent {
           // 拖动节点
           const t = this.mouse.dragTarget
           const { x, y } = this.mouse.dragTargetInitPosition
-          t.updateStart(x + move.x, y + move.y)
+          t.moveNodeTo({x: x + move.x, y: y + move.y})
           this.draw.render()
         } else {
           // 拖动整个画布
@@ -138,8 +138,12 @@ class CanvasEvent {
     hitCtx.canvas.height = nCanvas.height
 
     node.renderShape(hitCtx)
-    const w = 10, hw = w / 2
-    const h = 10, hH = h / 2
+
+    const scale = this.draw.getScale()
+    const pxSize = Math.max(Math.floor(30 / scale), 5)
+
+    const w = pxSize, hw = w / 2
+    const h = pxSize, hH = h / 2
     const left = Math.round(point.x - hw)
     const top = Math.round(point.y - hH)
     const imgData = hitCtx.getImageData(left, top, w, h)
@@ -157,18 +161,17 @@ class CanvasEvent {
     const cp = this.getCanvasPoint(evt)
     this.mouse.hover.target = null
     let isChanged = false
+    const gap = this.draw.getScale() * 10
     nodes.forEach((n) => {
       let isNodeChange = false
-      const isIn = n.isInNodeInner(cp)
+      const isIn = n.isInNodeInner(cp, gap)
+      let isHit = false
       if (isIn) {
         this.mouse.hover.target = n
-        const hasHit = this.hasHitNode(cp, n)
-        if (hasHit) {
-          isNodeChange = n.updateHoverStatus(true)
-        }
-      } else {
-        isNodeChange = n.updateHoverStatus(false)
+        isHit = this.hasHitNode(cp, n)
       }
+
+      isNodeChange = n.updateHoverStatus(isHit)
 
       if (isNodeChange && !isChanged) {
         isChanged = true

@@ -59,6 +59,13 @@ class VNode {
     return isChanged
   }
 
+
+  public moveNodeTo(pos: IPosition ) {
+    this.shape.updateStart(pos.x, pos.y)
+    this.background.updateStart(pos.x, pos.y)
+  }
+
+
   render() {
     if (this.isHover) {
       this.background.render()
