@@ -8,7 +8,7 @@ class VNode {
   private background: Rect
   private shape: Shape
   private isHover: boolean
-  private id: number
+  public id: number
 
   constructor(public draw: Draw, options: IShapeOptions) {
     const backgroundFillColor = 'blue'
@@ -47,6 +47,11 @@ class VNode {
   public getLeftTopPos() {
     const {left, top} = this.shape
     return {x: left, y: top}
+  }
+
+  public patchLeftTopPos(x: number, y: number) {
+    this.shape.left += x
+    this.shape.top += y
   }
 
   public getId() {

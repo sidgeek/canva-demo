@@ -48,8 +48,8 @@ class CanvasEvent {
     const mouseX = evt.offsetX || evt.pageX - canvas.offsetLeft
     const mouseY = evt.offsetY || evt.pageY - canvas.offsetTop
 
-    this.draw.mouse.lastX = mouseX
-    this.draw.mouse.lastY = mouseY
+    this.mouse.lastX = mouseX
+    this.mouse.lastY = mouseY
 
     return this.getCanvasPointFromMousePoint({
       x: mouseX,
@@ -61,7 +61,7 @@ class CanvasEvent {
     evt.preventDefault()
     evt.stopPropagation()
 
-    const { lastX, lastY } = this.draw.mouse
+    const { lastX, lastY } = this.mouse
     this.mouse.dragStart = this.getCanvasPointFromMousePoint({
       x: lastX,
       y: lastY,
@@ -102,6 +102,14 @@ class CanvasEvent {
           x: pt.x - dragStart.x,
           y: pt.y - dragStart.y,
         }
+
+        const { lastX, lastY } = this.mouse
+        const canvasPos = this.getCanvasPointFromMousePoint({
+          x: lastX,
+          y: lastY,
+        })
+        console.log('>>> ', canvasPos)
+
         if (this.mouse.dragTarget) {
           // 拖动节点
           const t = this.mouse.dragTarget
@@ -137,16 +145,22 @@ class CanvasEvent {
     hitCtx.canvas.width = nCanvas.width
     hitCtx.canvas.height = nCanvas.height
 
+    // 如果节点绘制到画布范围之外, 节点就看不到了，会导致碰撞失败, 所以统一绘制到起始位置(0, 0)周围
+    const tlPoint = node.getLeftTopPos()
+    const nPoint = {x: point.x - tlPoint.x, y: point.y - tlPoint.y }
+    node.patchLeftTopPos(-tlPoint.x, -tlPoint.y)
     node.renderShape(hitCtx)
+    node.patchLeftTopPos(tlPoint.x, tlPoint.y)
 
     const scale = this.draw.getScale()
     const pxSize = Math.max(Math.floor(30 / scale), 5)
 
     const w = pxSize, hw = w / 2
     const h = pxSize, hH = h / 2
-    const left = Math.round(point.x - hw)
-    const top = Math.round(point.y - hH)
-    const imgData = hitCtx.getImageData(left, top, w, h)
+    const left = Math.round(nPoint.x - hw)
+    const top = Math.round(nPoint.y - hH)
+    const imgData = hitCtx.getImageData(left, top, 30, 30)
+
 
     for (let i = 0; i < imgData.data.length; i += 4) {
       const alpha = imgData.data[i+3]
